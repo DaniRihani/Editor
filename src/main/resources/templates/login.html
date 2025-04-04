@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+<div class="login-container">
+  <h2>Login</h2><x></x>
+  <form action="#" th:action="@{/api/login}" th:object="${loginRequest}" method="post">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" th:field="*{username}" required>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" th:field="*{password}" required>
+
+    <button type="submit" class="btn">Login</button>
+  </form>
+
+  <div class="separator">OR</div>
+
+  <a th:href="@{/oauth2/authorization/google}" class="google-btn">
+    <i class="fa-brands fa-google"></i> Login with Google
+  </a>
+</div>
+</body>
+</html>
