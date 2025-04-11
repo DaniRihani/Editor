@@ -48,7 +48,6 @@ public class OAuthController {
     }
 
     private String extractUsername(String email) {
-        // Extract username from email (you can customize this logic)
         return email.split("@")[0];
     }
 
