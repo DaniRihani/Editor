@@ -3,7 +3,7 @@ name: Build and Push Editor Docker Image
 on:
   push:
     branches:
-      - main
+      - main  # Trigger only on push to the main branch
 
 jobs:
   build-and-push:
@@ -29,7 +29,7 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Build Docker image
-      run: docker build -t danirihani1/editor:latest .
+      run: docker build -t danirihani1/editor:latest -f src/Dockerfile .
 
-    - name: Push to Docker Hub
+    - name: Push Docker image to Docker Hub
       run: docker push danirihani1/editor:latest
