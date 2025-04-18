@@ -9,9 +9,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-@CrossOrigin(origins = "http://localhost:8000")
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -27,21 +28,26 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         Optional<User> userOpt = userService
                 .validateUser(loginRequest.getUsername(), loginRequest.getPassword());
-
+        System.out.println(userOpt);
         if (userOpt.isPresent()) {
-            System.out.println(userOpt);
-            String role = userOpt.get().getRole().name();
+            User user = userOpt.get();
+            String role = user.getRole().name();
+            Integer userId = user.getId();
+
+            // Build a mutable map so we can put more than 10 entries if needed
+            Map<String,Object> resp = new HashMap<>();
+            resp.put("success", true);
+            resp.put("role",    role);
+            resp.put("userId",  userId);
+
             return ResponseEntity
                     .ok()
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(Map.of(
-                            "success", true,
-                            "role", role
-                    ));
-
+                    .body(resp);
         } else {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
+                    .contentType(MediaType.APPLICATION_JSON)
                     .body(Map.of(
                             "success", false,
                             "message", "Invalid credentials"

@@ -3,6 +3,7 @@ package com.example.Project.Repository;
 
 
 import com.example.Project.Models.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -14,6 +15,12 @@ import java.util.Optional;
 public class UserRepository {
 
     private final JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    public UserRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
     private final RowMapper<User> userRowMapper = (rs, rowNum) -> {
         User user = new User();
         user.setId(rs.getInt("id"));
@@ -24,10 +31,6 @@ public class UserRepository {
         user.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
         return user;
     };
-
-    public UserRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     // Create
     public User save(User user) {

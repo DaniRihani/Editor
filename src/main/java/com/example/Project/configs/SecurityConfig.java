@@ -30,6 +30,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/login/oauth2/code/google").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/code").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/code/user/*").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
