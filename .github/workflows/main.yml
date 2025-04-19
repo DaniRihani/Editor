@@ -1,34 +1,35 @@
-name: Build and Push Editor Image
+name: Build and Push Editor Docker Image
 
 on:
   push:
-    paths:
-      - 'Editor/**'
-      - '.github/workflows/editor-docker.yml'
     branches:
-      - main
+      - main  # Trigger only on push to the main branch
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout source code
+    - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Build with Maven
+      run: mvn clean package -DskipTests
 
     - name: Log in to Docker Hub
-      uses: docker/login-action@v3
+      uses: docker/login-action@v2
       with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v5
-      with:
-        context: ./Editor
-        file: ./Editor/Dockerfile
-        push: true
-        tags: danirihani1/editor:latest
+    - name: Build Docker image
+      run: docker build -t danirihani1/editor:latest -f src/Dockerfile .
+
+    - name: Push Docker image to Docker Hub
+      run: docker push danirihani1/editor:latest
