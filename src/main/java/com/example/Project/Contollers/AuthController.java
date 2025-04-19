@@ -2,7 +2,7 @@ package com.example.Project.Contollers;
 
 import com.example.Project.Models.LoginRequest;
 import com.example.Project.Models.User;
-import com.example.Project.Services.UserService;
+import com.example.Project.Services.UserServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,10 +17,10 @@ import java.util.Optional;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final UserService userService;
+    private final UserServiceImplementation userService;
 
     @Autowired
-    public AuthController(UserService userService) {
+    public AuthController(UserServiceImplementation userService) {
         this.userService = userService;
     }
 
