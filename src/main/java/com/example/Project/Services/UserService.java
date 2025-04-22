@@ -11,4 +11,5 @@ public interface UserService {
     String getUserRole(String username, UserDetails currentUser);
     User createUser(String username, String password, User.Role role);
     Optional<User> validateUser(String username, String password);
+    boolean existsByUsername(String username);
 }

@@ -1,6 +1,7 @@
 package com.example.Project.Services;
 
 
+import com.example.Project.Repository.UserRepository;
 import com.example.Project.Repository.UserRepositoryImplementation;
 import com.example.Project.Models.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,14 +9,17 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.security.PublicKey;
 import java.util.Optional;
 
 @Service
 public class UserServiceImplementation implements UserService{
-    private final UserRepositoryImplementation userRepository;
+
+
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserServiceImplementation(UserRepositoryImplementation userRepository) {
+    public UserServiceImplementation(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -47,5 +51,8 @@ public class UserServiceImplementation implements UserService{
     public Optional<User> validateUser(String username, String password) {
         return userRepository.findByUsername(username)
                 .filter(user -> user.getPassword().equals(password));
+    }
+    public boolean existsByUsername(String username){
+      return  userRepository.existsByUsername(username);
     }
 }

@@ -1,8 +1,9 @@
 package com.example.Project.Contollers;
 
 import com.example.Project.Models.LoginRequest;
+import com.example.Project.Models.SignupRequest;
 import com.example.Project.Models.User;
-import com.example.Project.Services.UserServiceImplementation;
+import com.example.Project.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,10 +18,10 @@ import java.util.Optional;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final UserServiceImplementation userService;
+    private final UserService userService;
 
     @Autowired
-    public AuthController(UserServiceImplementation userService) {
+    public AuthController(UserService userService) {
         this.userService = userService;
     }
 
@@ -52,6 +53,39 @@ public class AuthController {
                             "success", false,
                             "message", "Invalid credentials"
                     ));
+        }
+    }
+    @PostMapping("/signup")
+    public ResponseEntity<?> signup(@RequestBody SignupRequest signupRequest) {
+        try {
+            // Check if username exists
+            if (userService.existsByUsername(signupRequest.getUsername())) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "success", false,
+                        "message", "Username already exists"
+                ));
+            }
+
+            // Convert role string to enum
+            User.Role role = User.Role.valueOf(signupRequest.getRole().toLowerCase());
+
+            // Create new user (password stored in plain text)
+            User newUser = userService.createUser(
+                    signupRequest.getUsername(),
+                    signupRequest.getPassword(), // Storing plain text password
+                    role
+            );
+
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "User created successfully",
+                    "userId", newUser.getId()
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", "Invalid role. Use admin, editor, or viewer"
+            ));
         }
     }
 }

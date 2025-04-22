@@ -4,10 +4,13 @@ import com.example.Project.DTO.AuthResponse;
 import com.example.Project.DTO.ErrorResponse;
 import com.example.Project.DTO.GoogleTokenRequest;
 import com.example.Project.Execptions.InvalidTokenException;
+import com.example.Project.Models.User;
+import com.example.Project.Services.UserService;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,11 +27,14 @@ import java.util.Collections;
 public class OAuthController {
 
     private final String googleClientId;
+    private final UserService userService;
 
+    @Autowired
     public OAuthController(
-            @Value("${security.oauth2.google.client-id}") String googleClientId
-    ) {
+            @Value("${security.oauth2.google.client-id}") String googleClientId, UserService userService
+            ) {
         this.googleClientId = googleClientId;
+        this.userService=userService;
     }
 
     @PostMapping("/login/oauth2/code/google")
@@ -39,7 +45,16 @@ public class OAuthController {
 
         try {
             GoogleIdToken.Payload payload = verifyGoogleToken(request.getToken());
-            String username = extractUsername(payload.getEmail());
+            String email = payload.getEmail();
+            String username = extractUsername(email);
+
+            if (!userService.existsByUsername(username)) {
+                userService.createUser(
+                        username,
+                        "wqejberuwvnenrvnwedjvokeq@122e3c!)HFDE",
+                        User.Role.editor
+                );
+            }
 
             return ResponseEntity.ok().body(new AuthResponse(
                     "Login successful",
@@ -48,6 +63,8 @@ public class OAuthController {
 
         } catch (InvalidTokenException e) {
             return ResponseEntity.badRequest().body(new ErrorResponse("Invalid Google token"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
                     .body(new ErrorResponse("Authentication failed: " + e.getMessage()));
@@ -73,4 +90,5 @@ public class OAuthController {
         }
         return googleIdToken.getPayload();
     }
+
 }

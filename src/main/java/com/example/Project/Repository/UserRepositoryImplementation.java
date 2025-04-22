@@ -6,13 +6,17 @@ import com.example.Project.Models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class UserRepositoryImplementation {
+public class UserRepositoryImplementation implements UserRepository{
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -34,18 +38,29 @@ public class UserRepositoryImplementation {
 
     // Create
     public User save(User user) {
-        String sql = """
-            INSERT INTO users (username, password, role)
-            VALUES (?, ?, ?)
-            RETURNING *
-            """;
-        return jdbcTemplate.queryForObject(
-                sql,
-                userRowMapper,
-                user.getUsername(),
-                user.getPassword(),
-                user.getRole().name()
-        );
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(conn -> {
+            PreparedStatement ps = conn.prepareStatement(
+                    "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS
+            );
+            ps.setString(1, user.getUsername());
+            ps.setString(2, user.getPassword());
+            ps.setString(3, user.getRole().name());
+            return ps;
+        }, keyHolder);
+
+        // Grab the newly-generated PK
+        Number key = keyHolder.getKey();
+        if (key == null) {
+            throw new IllegalStateException("Failed to retrieve generated user ID");
+        }
+        int newId = key.intValue();
+
+        // Query back the full user row
+        return findById(newId)
+                .orElseThrow(() -> new IllegalStateException("Inserted user not found"));
     }
 
     // Read
@@ -70,20 +85,26 @@ public class UserRepositoryImplementation {
 
     // Update
     public User update(User user) {
+        // 1) Execute the UPDATE
         String sql = """
-            UPDATE users 
-            SET username = ?, password = ?, role = ?
-            WHERE id = ?
-            RETURNING *
-            """;
-        return jdbcTemplate.queryForObject(
+        UPDATE users 
+        SET username = ?, password = ?, role = ?
+        WHERE id = ?
+        """;
+        int rows = jdbcTemplate.update(
                 sql,
-                userRowMapper,
                 user.getUsername(),
                 user.getPassword(),
                 user.getRole().name(),
                 user.getId()
         );
+        if (rows == 0) {
+            throw new IllegalArgumentException("No user found with ID " + user.getId());
+        }
+
+        // 2) Re‑query for the full record
+        return findById(user.getId())
+                .orElseThrow(() -> new IllegalStateException("Updated user not found"));
     }
 
     // Delete
