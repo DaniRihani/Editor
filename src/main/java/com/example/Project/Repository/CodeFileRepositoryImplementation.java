@@ -14,7 +14,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Repository
-public class CodeFileRepositoryImplementation {
+public class CodeFileRepositoryImplementation implements CodeFileRepository{
 
     private final JdbcTemplate jdbcTemplate;
 

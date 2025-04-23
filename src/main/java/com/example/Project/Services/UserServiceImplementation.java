@@ -2,14 +2,13 @@ package com.example.Project.Services;
 
 
 import com.example.Project.Repository.UserRepository;
-import com.example.Project.Repository.UserRepositoryImplementation;
+
 import com.example.Project.Models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.security.PublicKey;
 import java.util.Optional;
 
 @Service
