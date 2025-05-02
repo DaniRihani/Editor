@@ -1,7 +1,5 @@
 package com.example.Project.Repository;
 
-
-
 import com.example.Project.Models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;

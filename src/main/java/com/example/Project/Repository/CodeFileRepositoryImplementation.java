@@ -41,11 +41,11 @@ public class CodeFileRepositoryImplementation implements CodeFileRepository{
         int fileId = Objects.requireNonNull(keyHolder.getKey()).intValue();
 
         // 2) batch insert into join table
-        List<Integer> uids = codeFile.getUserIds();
-        if (uids != null && !uids.isEmpty()) {
+        List<Integer> userIds = codeFile.getUserIds();
+        if (userIds != null && !userIds.isEmpty()) {
             String joinSql = "INSERT INTO code_file_users (code_file_id, user_id) VALUES (?, ?)";
-            List<Object[]> batch = uids.stream()
-                    .map(uid -> new Object[]{fileId, uid})
+            List<Object[]> batch = userIds.stream()
+                    .map(userId -> new Object[]{fileId, userId})
                     .collect(Collectors.toList());
             jdbcTemplate.batchUpdate(joinSql, batch);
         }

@@ -8,10 +8,7 @@ import com.example.Project.Models.CodeFile;
 import com.example.Project.Services.CodeFileService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.http.ResponseEntity;
-
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
