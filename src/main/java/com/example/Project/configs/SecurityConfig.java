@@ -34,6 +34,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/code").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/code/user/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/invite/create").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

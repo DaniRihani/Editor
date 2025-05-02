@@ -69,10 +69,18 @@ public class CodeFileRepositoryImplementation implements CodeFileRepository{
         return files;
     }
 
+    @Override
+    public int linkUserToFile(int codeFileId, int userId) {
+        String sql = "INSERT INTO code_file_users (code_file_id, user_id) VALUES (?, ?)";
+        return jdbcTemplate.update(sql, codeFileId, userId);
+    }
+
     private List<Integer> fetchUserIdsForFile(int fileId) {
         String sql = "SELECT user_id FROM code_file_users WHERE code_file_id = ?";
         return jdbcTemplate.queryForList(sql, Integer.class, fileId);
     }
+
+
 
     private static class CodeFileRowMapper implements RowMapper<CodeFile> {
         @Override

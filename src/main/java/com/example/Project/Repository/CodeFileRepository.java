@@ -7,4 +7,5 @@ import java.util.List;
 public interface CodeFileRepository {
     int save(CodeFile codeFile);
     List<CodeFile> findByUsername(String username);
+    int linkUserToFile(int codeFileId, int userId);
 }
